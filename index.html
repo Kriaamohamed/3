@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3ede1">
+    <title>KRIAA</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Montserrat:wght@500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+    <button class="mobile-menu" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    <a class="logo" onclick="show('home')">KRIAA</a>
+
+    <nav id="mainNav">
+        <button onclick="show('home')" data-i18n="home">الرئيسية</button>
+        <button onclick="show('social')" data-i18n="services">الخدمات</button>
+        <button onclick="show('portfolio')" data-i18n="portfolio">PORTE FELY0</button>
+        <button id="loginButton" onclick="openLogin()" data-i18n="login">تسجيل الدخول</button>
+        <button id="adminButton" class="admin-nav-button" onclick="openAdminDashboard()">Admin</button>
+        <button id="logoutButton" class="logout-button" onclick="logout()" data-i18n="logout">تسجيل الخروج</button>
+        <select id="languageSelect" onchange="changeLanguage(this.value)" aria-label="Language">
+            <option value="ar">العربية</option>
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+        </select>
+    </nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+    <div class="hero">
+        <div class="hero-content">
+            <span class="eyebrow">KRIAA</span>
+            <h1 data-i18n="heroTitle">تجربة رقمية بتفاصيل مختلفة</h1>
+            <p data-i18n="heroText">خدمات رقمية وتصاميم وتجارب مخصصة.</p>
+            <button class="primary-btn" onclick="show('social')" data-i18n="discover">اكتشف الخدمات →</button>
+        </div>
+    </div>
+</section>
+
+<section id="social" class="page">
+    <div class="section-heading">
+        <span class="eyebrow">KRIAA</span>
+        <h2 data-i18n="servicesTitle">خدماتنا</h2>
+        <p data-i18n="servicesText">اختر الخدمة المناسبة لك.</p>
+    </div>
+
+    <div class="tools-row">
+        <div class="search-box">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="Rechercher un produit…" oninput="renderProducts()">
+        </div>
+    </div>
+
+    <div id="categories" class="categories">
+        <button class="category-btn active" data-category="all" onclick="setCategory('all')">TOUT</button>
+        <button class="category-btn" data-category="instagram" onclick="setCategory('instagram')">INSTAGRAM</button>
+        <button class="category-btn" data-category="tiktok" onclick="setCategory('tiktok')">TIKTOK</button>
+        <button class="category-btn" data-category="youtube" onclick="setCategory('youtube')">YOUTUBE</button>
+        <button class="category-btn" data-category="autres" onclick="setCategory('autres')">AUTRES</button>
+    </div>
+
+    <div id="productsContainer" class="products-grid"></div>
+</section>
+
+<section id="portfolio" class="page">
+    <div class="section-heading">
+        <span class="eyebrow">KRIAA</span>
+        <h2>NOS CRÉATIONS</h2>
+        <p data-i18n="portfolioText">المواقع والتصاميم والمشاريع التي صنعتها KRIAA.</p>
+    </div>
+    <div id="portfolioContainer" class="portfolio-grid"></div>
+</section>
+
+<!-- LOGIN -->
+<div id="loginModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+        <button class="close-modal" onclick="closeLogin()" aria-label="Close">×</button>
+        <span class="eyebrow">KRIAA</span>
+        <h2 data-i18n="loginTitle">تسجيل الدخول</h2>
+        <input type="text" id="usernameInput" placeholder="اسم المستخدم" autocomplete="username">
+        <input type="password" id="passwordInput" placeholder="كلمة المرور" autocomplete="current-password">
+        <button class="primary-btn full" onclick="login()" data-i18n="login">تسجيل الدخول</button>
+        <p id="loginMessage"></p>
+    </div>
+</div>
+
+<!-- ORDER -->
+<div id="orderModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-box order-box">
+        <button class="close-modal" onclick="closeOrder()" aria-label="Close">×</button>
+        <span class="eyebrow">KRIAA ORDER</span>
+        <h2 id="orderTitle">طلب الخدمة</h2>
+        <p id="orderSummary" class="order-summary"></p>
+
+        <div id="orderFormFields">
+            <div id="standardOrderFields">
+                <label>اسم الطلب / العميل <span class="required">*</span></label>
+                <input id="orderUsername" placeholder="اسم العميل" autocomplete="off">
+
+                <div id="accountUrlField">
+                    <label id="accountUrlLabel">رابط الحساب <span class="required">*</span></label>
+                    <input id="orderAccountUrl" type="url" placeholder="https://..." autocomplete="off">
+                </div>
+
+                <div id="postUrlField">
+                    <label>رابط الـ Post أو Video <span class="required">*</span></label>
+                    <input id="orderPostUrl" type="url" placeholder="https://...">
+                </div>
+
+                <label id="quantityFieldLabel">الكمية <span class="required">*</span></label>
+                <select id="orderQuantity" onchange="updateOrderTotal()"></select>
+            </div>
+
+            <div id="thumbnailOrderFields" style="display:none">
+                <label>وصف ما تريده في الـ Thumbnail <span class="required">*</span></label>
+                <textarea id="orderThumbnailDescription" rows="4" placeholder="اشرح الفكرة، النص، الألوان، الأسلوب..." ></textarea>
+
+                <label>صور / ملفات مرجعية</label>
+                <input id="orderReferenceFiles" type="file" multiple accept="image/*,.pdf,.psd,.ai,.zip,.rar">
+                <small class="file-help">يمكنك اختيار أكثر من ملف. سيتم حفظ أسماء الملفات مع الطلب، ويجب إرفاق الملفات يدويًا في WhatsApp لأن رابط WhatsApp لا يستطيع إرفاق ملفات جهازك تلقائيًا.</small>
+
+                <div id="referenceFileList" class="reference-file-list"></div>
+            </div>
+
+            <label>WhatsApp <span class="required">*</span></label>
+            <input id="orderWhatsApp" type="tel" placeholder="مثال: 216XXXXXXXX" autocomplete="tel">
+
+            <label>ملاحظات إضافية</label>
+            <textarea id="orderNotes" rows="3" placeholder="ملاحظات إضافية..."></textarea>
+
+            <div class="order-total"><span>المجموع</span><strong id="orderTotal">—</strong></div>
+            <button class="primary-btn full" onclick="reviewOrder()">مراجعة الطلب</button>
+            <p id="orderMessage"></p>
+        </div>
+
+        <div id="orderReview" class="order-review" style="display:none">
+            <h3>مراجعة الطلب</h3>
+            <div id="orderReviewContent"></div>
+            <div class="review-actions">
+                <button class="secondary-btn" onclick="backToOrderForm()">تعديل</button>
+                <button class="primary-btn" onclick="confirmAndSendOrder()">تأكيد وإرسال عبر WhatsApp</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADMIN -->
+<section id="adminDashboard" class="page admin-page">
+    <div class="admin-header">
+        <div>
+            <span class="eyebrow">KRIAA ADMIN</span>
+            <h2>Admin Dashboard</h2>
+            <p class="admin-note">إدارة المنتجات والخدمات والصور وPORTE FELY0.</p>
+        </div>
+        <button class="secondary-btn" onclick="show('social')">العودة للمتجر</button>
+    </div>
+
+    <div class="admin-tabs">
+        <button class="admin-tab active" onclick="openAdminTab('ordersAdmin', this);renderAdminOrders()">ORDERS</button>
+        <button class="admin-tab" onclick="openAdminTab('productsAdmin', this)">PRODUCTS</button>
+        <button class="admin-tab" onclick="openAdminTab('servicesAdmin', this)">SERVICES</button>
+        <button class="admin-tab" onclick="openAdminTab('portfolioAdmin', this)">PORTFOLIO</button>
+        <button class="admin-tab" onclick="openAdminTab('imagesAdmin', this)">IMAGES</button>
+        <button class="admin-tab" onclick="openAdminTab('settingsAdmin', this)">SETTINGS</button>
+    </div>
+
+    <div id="ordersAdmin" class="admin-content active">
+        <div class="admin-panel">
+            <div class="admin-panel-heading">
+                <div>
+                    <h3>📦 Commandes</h3>
+                    <p class="admin-note">الطلبات التي تم إنشاؤها من هذا المتصفح. يمكنك تغيير حالة كل طلب.</p>
+                </div>
+                <button class="secondary-btn" onclick="renderAdminOrders()">تحديث</button>
+            </div>
+            <div id="adminOrders"></div>
+        </div>
+    </div>
+
+    <div id="productsAdmin" class="admin-content">
+        <div class="admin-panel">
+            <h3>➕ إضافة منتج / خدمة</h3>
+            <input id="newProductName" placeholder="اسم المنتج">
+            <input id="newProductPrice" placeholder="السعر مثال: 10DT">
+            <input id="newProductOldPrice" placeholder="السعر القديم اختياري">
+            <input id="newProductImage" type="url" placeholder="رابط الصورة اختياري">
+            <label class="file-label">Upload Product Image
+                <input id="newProductImageFile" type="file" accept="image/*">
+            </label>
+            <input id="newProductDescription" placeholder="الوصف">
+            <select id="newProductCategory">
+                <option value="autres">AUTRES</option>
+                <option value="instagram">INSTAGRAM</option>
+                <option value="tiktok">TIKTOK</option>
+                <option value="youtube">YOUTUBE</option>
+            </select>
+            <select id="newProductType">
+                <option value="engagement">LIKES / VIEWS</option>
+                <option value="followers">FOLLOWERS</option>
+                <option value="thumbnail">THUMBNAIL / DESIGN</option>
+            </select>
+            <input id="newProductQuantity" placeholder="الكمية الأولى مثال: 1000">
+            <input id="newProductQuantityPrice" placeholder="سعر الكمية الأولى">
+            <button class="admin-add-button" onclick="addProduct()">إضافة المنتج</button>
+        </div>
+
+        <div class="admin-panel">
+            <h3>🛍️ المنتجات الحالية</h3>
+            <div id="adminProducts"></div>
+        </div>
+    </div>
+
+    <div id="servicesAdmin" class="admin-content">
+        <div class="admin-panel">
+            <h3>Services Management</h3>
+            <p class="admin-note">أضف أو عدّل الكميات والأسعار لكل خدمة. مثال: 1000=10DT ثم 2000=18DT ثم 3000=25DT.</p>
+            <div id="adminServices"></div>
+        </div>
+    </div>
+
+    <div id="portfolioAdmin" class="admin-content">
+        <div class="admin-panel">
+            <h3>➕ إضافة مشروع PORTE FELY0</h3>
+            <input id="portfolioName" placeholder="اسم المشروع">
+            <input id="portfolioDescription" placeholder="وصف المشروع">
+            <input id="portfolioUrl" type="url" placeholder="رابط الموقع">
+            <input id="portfolioYear" placeholder="السنة">
+            <label class="file-label">Upload Thumbnail
+                <input id="portfolioImageFile" type="file" accept="image/*">
+            </label>
+            <input id="portfolioImageUrl" type="url" placeholder="رابط Thumbnail اختياري">
+            <select id="portfolioFit">
+                <option value="cover">Object Fit: Cover</option>
+                <option value="contain">Object Fit: Contain</option>
+                <option value="fill">Object Fit: Fill</option>
+            </select>
+            <select id="portfolioPosition">
+                <option value="center">Position: Center</option>
+                <option value="top">Top</option>
+                <option value="bottom">Bottom</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+            </select>
+            <div class="two-inputs">
+                <input id="portfolioWidth" type="number" placeholder="Image Width">
+                <input id="portfolioHeight" type="number" placeholder="Image Height">
+            </div>
+            <input id="portfolioRadius" type="number" placeholder="Border Radius (px)" value="16">
+            <button class="admin-add-button" onclick="addPortfolioProject()">إضافة المشروع</button>
+        </div>
+
+        <div class="admin-panel">
+            <h3>Portfolio Projects</h3>
+            <div id="adminPortfolio"></div>
+        </div>
+    </div>
+
+    <div id="imagesAdmin" class="admin-content">
+        <div class="admin-panel">
+            <h3>🖼️ Image / Thumbnail System</h3>
+            <p class="admin-note">إعدادات الصورة هنا تطبق فعليًا على صورة المنتج في المتجر.</p>
+            <div id="adminImageTools"></div>
+        </div>
+    </div>
+
+    <div id="settingsAdmin" class="admin-content">
+        <div class="admin-panel">
+            <h3>⚙️ Settings</h3>
+            <label>Thumbnail Quantity Mode</label>
+            <select id="thumbnailQuantityMode" onchange="saveGlobalSettings()">
+                <option value="1">1</option>
+                <option value="custom">Custom</option>
+            </select>
+            <p class="admin-note">عند اختيار 1، يتم التعامل مع Thumbnail كعنصر واحد.</p>
+        </div>
+        <div class="admin-panel">
+            <h3>🔐 Admin Password</h3>
+            <p class="admin-note">غيّر كلمة سر الأدمن من هنا. سيتم تخزينها كقيمة مشفّرة بدل حفظها كنص واضح.</p>
+            <input id="currentAdminPassword" type="password" placeholder="كلمة السر الحالية">
+            <input id="newAdminPassword" type="password" placeholder="كلمة السر الجديدة">
+            <input id="confirmAdminPassword" type="password" placeholder="تأكيد كلمة السر الجديدة">
+            <button class="admin-add-button" onclick="changeAdminPassword()">تغيير كلمة سر Admin</button>
+            <p class="admin-note security-warning">مهم: GitHub Pages لا يوفر حماية خادمية. هذه الميزة تحسن تخزين كلمة السر فقط؛ الحماية الحقيقية من تعديل localStorage أو تجاوز تسجيل الدخول تحتاج Backend/Auth.</p>
+        </div>
+    </div>
+</section>
+</main>
+
+<footer>
+    <strong>KRIAA</strong>
+    <p>© 2026 KRIAA. Tous droits réservés.</p>
+    <div class="footer-links">
+        <button onclick="show('home')">Home</button>
+        <button onclick="show('social')">Services</button>
+        <button onclick="show('portfolio')">Portfolio</button>
+    </div>
+</footer>
+
+<div class="whatsapp-float" onclick="whatsapp()" aria-label="WhatsApp">◔</div>
+<script src="script.js"></script>
+</body>
+</html>
